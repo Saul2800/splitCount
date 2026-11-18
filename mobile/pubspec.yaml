@@ -31,7 +31,7 @@ dependencies:
   pdf: ^3.10.8
   printing: ^5.14.0
   csv: ^6.0.0
-  share_plus: ^9.0.0
+  share_plus: ^10.1.4
 
   # QR Code Sharing & Scanning
   qr_flutter: ^4.1.0
