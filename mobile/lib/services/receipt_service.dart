@@ -24,7 +24,7 @@ class ReceiptTicketService {
         margin: const pw.EdgeInsets.all(12),
         build: (pw.Context context) {
           return pw.Column(
-            crossAxisAlignment: pw.CrossAlignment.center,
+            crossAxisAlignment: pw.CrossAxisAlignment.center,
             children: [
               pw.Text('================================', style: const pw.TextStyle(fontSize: 10)),
               pw.Text('*** SPLITCOUNT TRIP TICKET ***', style: pw.TextStyle(fontWeight: pw.FontWeight.bold, fontSize: 13)),
