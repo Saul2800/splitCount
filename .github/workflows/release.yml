@@ -14,6 +14,8 @@ jobs:
   build-and-deploy:
     name: Build Flutter APK & Deploy
     runs-on: ubuntu-latest
+    env:
+      CF_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
 
     steps:
       - name: Checkout Code
@@ -49,9 +51,9 @@ jobs:
 
       - name: Upload APK to Cloudflare R2
         uses: cloudflare/wrangler-action@v3
-        if: ${{ secrets.CLOUDFLARE_API_TOKEN != '' }}
+        if: env.CF_TOKEN != ''
         env:
-          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_API_TOKEN: ${{ env.CF_TOKEN }}
         with:
           workingDirectory: 'backend'
           command: r2 object put splitcount-apks/splitcount-latest.apk --file=../mobile/build/app/outputs/flutter-apk/app-release.apk
