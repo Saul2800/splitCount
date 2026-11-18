@@ -1,0 +1,21 @@
+{
+  "name": "splitcount-backend",
+  "version": "1.0.0",
+  "description": "Cloudflare Worker and D1 API backend for SplitCount",
+  "main": "src/index.ts",
+  "scripts": {
+    "dev": "wrangler dev",
+    "deploy": "wrangler deploy",
+    "d1:create": "wrangler d1 create splitcount-db",
+    "d1:migrate:local": "wrangler d1 migrations apply splitcount-db --local",
+    "d1:migrate:remote": "wrangler d1 migrations apply splitcount-db --remote"
+  },
+  "dependencies": {
+    "hono": "^4.6.0"
+  },
+  "devDependencies": {
+    "@cloudflare/workers-types": "^4.20241022.0",
+    "typescript": "^5.6.0",
+    "wrangler": "^4.164.0"
+  }
+}

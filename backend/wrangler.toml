@@ -1,0 +1,18 @@
+name = "splitcount-backend"
+main = "src/index.ts"
+compatibility_date = "2024-11-01"
+
+[vars]
+ENVIRONMENT = "production"
+
+# Cloudflare D1 Database binding
+[[d1_databases]]
+binding = "DB"
+database_name = "splitcount-db"
+database_id = "9645a3c4-0d04-49eb-8fd5-0b518a33f02a"
+migrations_dir = "migrations"
+
+# Cloudflare R2 Bucket binding for APK downloads
+[[r2_buckets]]
+binding = "APK_BUCKET"
+bucket_name = "splitcount-apks"

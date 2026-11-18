@@ -1,0 +1,118 @@
+import 'package:intl/intl.dart';
+import 'package:pdf/pdf.dart';
+import 'package:pdf/widgets.dart' as pw;
+import 'package:printing/printing.dart';
+import '../data/local/app_database.dart';
+import '../core/utils/debt_simplifier.dart';
+
+class ReceiptTicketService {
+  static Future<void> printOrShareReceipt({
+    required Group group,
+    required List<Expense> expenses,
+    required List<GroupMember> members,
+    required List<Settlement> settlements,
+    required List<DebtTransfer> simplifiedDebts,
+  }) async {
+    final doc = pw.Document();
+    final memberMap = {for (final m in members) m.id: m.name};
+    final dateFormat = DateFormat('yyyy-MM-dd HH:mm');
+    final totalSpent = expenses.fold<double>(0.0, (sum, e) => sum + e.amount);
+
+    doc.addPage(
+      pw.Page(
+        pageFormat: PdfPageFormat.roll80,
+        margin: const pw.EdgeInsets.all(12),
+        build: (pw.Context context) {
+          return pw.Column(
+            crossAxisAlignment: pw.CrossAlignment.center,
+            children: [
+              pw.Text('================================', style: const pw.TextStyle(fontSize: 10)),
+              pw.Text('*** SPLITCOUNT TRIP TICKET ***', style: pw.TextStyle(fontWeight: pw.FontWeight.bold, fontSize: 13)),
+              pw.Text(group.name.toUpperCase(), style: pw.TextStyle(fontWeight: pw.FontWeight.bold, fontSize: 12)),
+              pw.Text('Date: ${dateFormat.format(DateTime.now())}', style: const pw.TextStyle(fontSize: 9)),
+              pw.Text('================================', style: const pw.TextStyle(fontSize: 10)),
+              pw.SizedBox(height: 8),
+
+              // Itemized Expenses
+              pw.Align(
+                alignment: pw.Alignment.centerLeft,
+                child: pw.Text('ITEMIZED EXPENSES:', style: pw.TextStyle(fontWeight: pw.FontWeight.bold, fontSize: 10)),
+              ),
+              pw.SizedBox(height: 4),
+              ...expenses.map((exp) {
+                return pw.Padding(
+                  padding: const pw.EdgeInsets.symmetric(vertical: 2),
+                  child: pw.Row(
+                    mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
+                    children: [
+                      pw.Expanded(
+                        child: pw.Text(
+                          exp.title,
+                          style: const pw.TextStyle(fontSize: 9),
+                          maxLines: 1,
+                        ),
+                      ),
+                      pw.Text(
+                        '${exp.currency} ${exp.amount.toStringAsFixed(2)}',
+                        style: const pw.TextStyle(fontSize: 9),
+                      ),
+                    ],
+                  ),
+                );
+              }),
+
+              pw.SizedBox(height: 8),
+              pw.Divider(thickness: 1, borderStyle: pw.BorderStyle.dashed),
+              pw.Row(
+                mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
+                children: [
+                  pw.Text('TOTAL SPENT:', style: pw.TextStyle(fontWeight: pw.FontWeight.bold, fontSize: 11)),
+                  pw.Text(
+                    '${group.currency} ${totalSpent.toStringAsFixed(2)}',
+                    style: pw.TextStyle(fontWeight: pw.FontWeight.bold, fontSize: 11),
+                  ),
+                ],
+              ),
+              pw.Divider(thickness: 1, borderStyle: pw.BorderStyle.dashed),
+              pw.SizedBox(height: 8),
+
+              // Simplified Debts Settlement Section
+              pw.Align(
+                alignment: pw.Alignment.centerLeft,
+                child: pw.Text('FINAL SETTLEMENTS:', style: pw.TextStyle(fontWeight: pw.FontWeight.bold, fontSize: 10)),
+              ),
+              pw.SizedBox(height: 4),
+              if (simplifiedDebts.isEmpty)
+                pw.Text('All balances are settled!', style: const pw.TextStyle(fontSize: 9, color: PdfColors.grey700))
+              else
+                ...simplifiedDebts.map((debt) {
+                  final from = memberMap[debt.fromMemberId] ?? 'Member';
+                  final to = memberMap[debt.toMemberId] ?? 'Member';
+                  return pw.Padding(
+                    padding: const pw.EdgeInsets.symmetric(vertical: 1.5),
+                    child: pw.Row(
+                      mainAxisAlignment: pw.MainAxisAlignment.spaceBetween,
+                      children: [
+                        pw.Text('$from -> $to', style: const pw.TextStyle(fontSize: 9)),
+                        pw.Text('${group.currency} ${debt.amount.toStringAsFixed(2)}', style: const pw.TextStyle(fontSize: 9)),
+                      ],
+                    ),
+                  );
+                }),
+
+              pw.SizedBox(height: 12),
+              pw.Text('================================', style: const pw.TextStyle(fontSize: 10)),
+              pw.Text('THANK YOU FOR TRAVELING TOGETHER!', style: pw.TextStyle(fontWeight: pw.FontWeight.bold, fontSize: 9)),
+              pw.Text('Generated by SplitCount', style: const pw.TextStyle(fontSize: 8, color: PdfColors.grey600)),
+            ],
+          );
+        },
+      ),
+    );
+
+    await Printing.layoutPdf(
+      onLayout: (PdfPageFormat format) async => doc.save(),
+      name: 'receipt_${group.name.replaceAll(' ', '_')}.pdf',
+    );
+  }
+}

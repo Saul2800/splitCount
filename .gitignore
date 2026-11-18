@@ -1,0 +1,26 @@
+# Backend dependencies & Cloudflare state
+backend/node_modules/
+backend/.wrangler/
+backend/dist/
+
+# Flutter & Dart build artifacts
+mobile/.dart_tool/
+mobile/build/
+mobile/.flutter-plugins
+mobile/.flutter-plugins-dependencies
+mobile/.packages
+mobile/.pub-cache/
+mobile/.pub/
+
+# Android build artifacts
+mobile/android/.gradle/
+mobile/android/local.properties
+mobile/android/app/build/
+
+# Editor & OS files
+.idea/
+.vscode/
+*.swp
+*.lock
+.DS_Store
+Thumbs.db
