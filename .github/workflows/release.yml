@@ -35,9 +35,7 @@ jobs:
 
       - name: Install Mobile Dependencies
         working-directory: ./mobile
-        run: |
-          flutter pub get
-          dart run build_runner build --delete-conflicting-outputs
+        run: flutter pub get
 
       - name: Build Android Release APK
         working-directory: ./mobile
