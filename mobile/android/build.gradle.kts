@@ -25,7 +25,7 @@ subprojects {
         val android = extensions.findByName("android")
         try {
             val method = android?.javaClass?.getMethod("compileSdkVersion", Int::class.javaPrimitiveType)
-            method?.invoke(android, 35)
+            method?.invoke(android, 36)
         } catch (_: Exception) {}
     }
 }
